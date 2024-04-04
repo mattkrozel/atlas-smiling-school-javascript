@@ -200,7 +200,8 @@
 }
 
 .quote-text {
-  padding-left: 53px;
+  padding: 0px;
+  padding-left: 50px;
 }
 
 .quotes .row [class*="col"] {
