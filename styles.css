@@ -394,6 +394,10 @@
   }
 }
 
+.videos .section-header {
+  text-align: center;
+}
+
 /* SMILES Section  */
 
 .smiles {

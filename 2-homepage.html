@@ -283,6 +283,20 @@
         <div class="section-header">
           <h2>Most <span>popular</span> tutorials</h2>
         </div>
+        <div id="videosCarousel" class="carousel slide" data-ride="carousel">
+          <div class="carousel-inner">
+
+          </div>
+          <div class="loader"></div>
+          <a class="carousel-control-prev arrow-left" href="#videosCarousel" role="button" data-slide="prev">
+            <img src="images/arrow_black_left.png" alt="previous quote" aria-hidden="true">
+            <span class="sr-only">Previous</span>
+          </a>
+          <a class="carousel-control-next arrow-right" href="#videosCarousel" role="button" data-slide="next">
+            <img src="images/arrow_black_right.png" alt="next quote" aria-hidden="true">
+            <span class="sr-only">Next</span>
+          </a>
+        </div>
       </section>
       <!-- 
       <section class="popular section d-flex align-items-center">
@@ -2045,6 +2059,7 @@
         </div>
       </section>
     </main>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
       $(document).ready(function () {
         function fetchQuotes() {
@@ -2081,7 +2096,62 @@
             }
           });
         }
+
+        function fetchVideoCards() {
+          $.ajax({
+            url: "https://smileschool-api.hbtn.info/popular-tutorials", method: "GET",
+            beforeSend: function () {
+              $(".loader").show();
+            },
+            success: function (data) {
+              $(".loader").hide();
+              var chunks = [];
+              for (var i = 0; i < data.length; i += 4) {
+                chunks.push(data.slice(i, i + 4));
+              }
+              chunks.forEach(function (chunk, index) {
+                var activeClass = index === 0 ? "active" : "";
+                var carouselItem = `<div class="carousel-item ${activeClass}"><div class="row">`;
+
+                chunk.forEach(function (video) {
+                  var starsHtml = '';
+                  for (var i = 0; i < 5; i++) {
+                    if (i < video.star) {
+                      starsHtml += '<img src="images/star_on.png" alt="full star">';
+                    } else {
+                      starsHtml += '<img src="images/star_off.png" alt="empty star">';
+                    }
+                  }
+                  var cardItem = `
+                    <div class="col-md-6 col-lg-3">
+                      <div class="card">
+                        <img src="${video.thumb_url}" alt="${video.title}">
+                        <h3>${video.title}</h3>
+                        <p>${video["sub-title"]}</p>
+                        <div class="author-info">
+                          <img class="author-pic small-circle" src="${video.author_pic_url}" alt="${video.author}">
+                          <h6 class="video-author">${video.author}</h6>
+                        </div>
+                        <div class="star-rating">
+                          <div class="stars">${starsHtml}</div>
+                          <p class="duration">${video.duration}</p>
+                        </div>
+                      </div>
+                    </div>`;
+                    carouselItem += cardItem;
+                });
+                carouselItem += `</div></div>`;
+                $(".videos .carousel-inner").append(carouselItem);
+              });
+              $(".videos .carousel").carousel();
+            },
+            error: function() {
+              $(".videos .carousel-inner").html('<div class="text-white">Failed to fetch video cards. Please try again later.</div>');
+            }
+          });
+        }
         fetchQuotes();
+        fetchVideoCards();
       });
     </script>
     <footer class="footer d-flex align-items-center justify-content-center">
